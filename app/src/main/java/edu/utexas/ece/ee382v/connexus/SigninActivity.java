@@ -1,4 +1,4 @@
-package edu.utexas.ece.ee382v.connexus.connexus;
+package edu.utexas.ece.ee382v.connexus;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -24,6 +24,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+
+import edu.utexas.ece.ee382v.connexus.connexus.R;
 
 public class SigninActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -53,6 +55,9 @@ public class SigninActivity extends AppCompatActivity implements
     private static final String KEY_IS_RESOLVING = "is_resolving";
     private static final String KEY_SHOULD_RESOLVE = "should_resolve";
 
+    /* Connexus variables */
+    private static String usr_mail = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +74,7 @@ public class SigninActivity extends AppCompatActivity implements
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
+        findViewById(R.id.view_all_btn).setOnClickListener(this);
 
         // Large sign-in
         ((SignInButton) findViewById(R.id.sign_in_button)).setSize(SignInButton.SIZE_WIDE);
@@ -93,6 +99,12 @@ public class SigninActivity extends AppCompatActivity implements
     private void updateUI(boolean isSignedIn) {
         if (isSignedIn) {
             String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+
+            if(email.isEmpty()){
+                Log.e(TAG, "SigninActivity>>updateUI(): isSignedIn but the cannot get the usr_email");
+            }
+            /* Update the usr_email variable */
+            usr_mail = email;
 
             mStatus.setText("Signed in as: {email}");
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
@@ -313,6 +325,9 @@ public class SigninActivity extends AppCompatActivity implements
             case R.id.disconnect_button:
                 onDisconnectClicked();
                 break;
+            case R.id.view_all_btn:
+                onViewAllBtnClicked();
+                break;
         }
     }
     // [END on_click]
@@ -355,4 +370,14 @@ public class SigninActivity extends AppCompatActivity implements
     }
     // [END on_disconnect_clicked]
 
+    /**
+     * BtnOnClick function of View_all_btn
+     * */
+    private void onViewAllBtnClicked() {
+        /* Create a new activity */
+        Intent intent= new Intent(this, ViewAllStreamsActivity.class);
+        /* Pass the user email to the new intent  */
+        intent.putExtra("usr_email", usr_mail);
+        startActivity(intent);
+    }
 }
