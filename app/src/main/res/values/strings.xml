@@ -23,11 +23,15 @@
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
 
-    <!-- Content Description for images -->
-    <!--<string name="desc_google_icon">Google Logo</string>-->
-
     <!-- Rationale for asking for Contacts -->
     <string name="contacts_permission_rationale">Contacts access is needed in order to retrieve your email address.</string>
 
+
+
+    <!--Button Texts-->
     <string name="view_all_btn">View All Streams</string>
+
+    <string name="ws_base_url">http://ee382v-apt-connexus.appspot.com/</string>
+
+
 </resources>
