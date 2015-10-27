@@ -380,4 +380,9 @@ public class SigninActivity extends AppCompatActivity implements
         intent.putExtra("usr_email", usr_mail);
         startActivity(intent);
     }
+
+    public void capture_camera(View view){
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+    }
 }
