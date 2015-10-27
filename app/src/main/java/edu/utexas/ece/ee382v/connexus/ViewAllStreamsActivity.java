@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+
+
 import edu.utexas.ece.ee382v.connexus.connexus.R;
 
 public class ViewAllStreamsActivity extends AppCompatActivity {

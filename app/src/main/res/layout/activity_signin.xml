@@ -35,6 +35,18 @@
         android:textColor="@android:color/white"
         android:textSize="36sp" />
 
+
+
+        <Button
+            android:id="@+id/capture"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/take_picture"
+            android:textColor="@android:color/white"
+            android:theme="@style/ThemeOverlay.MyDarkButton"
+            android:onClick="capture_camera"/>
+
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
@@ -106,6 +118,10 @@
                 android:textColor="@android:color/white"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
         </LinearLayout>
+
+
+
+
 
     </RelativeLayout>
 
