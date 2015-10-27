@@ -1,69 +1,124 @@
 package edu.utexas.ece.ee382v.connexus;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
-
+import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 
 import edu.utexas.ece.ee382v.connexus.connexus.R;
 
 
 
-public class ViewAllStreamsActivity extends AppCompatActivity {
+public class ViewAllStreamsActivity extends AppCompatActivity implements View.OnClickListener {
+
 
     private static final String TAG = "ViewAllStreamsActivity";
 
-    final String service_url = "/ws/stream/view_all";
-    final String request_ws_url = R.string.ws_base_url+service_url;
+//    final String service_url = "ws/stream/view_all";
+//    final String request_ws_url = R.string.ws_base_url+service_url;
+    final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/view_all";
 
     private static String usr_email = "";
+    private static String usr_id = "";
+    Context context = this;
+
+    private int last_stream_idx = -1;
+    private boolean is_view_subscribed = false;
+
+    Button subscribed_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_all_streams);
 
+
         /* Get the usr_email from the bundle */
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             usr_email = extras.getString("usr_email");
+            usr_id = extras.getString("usr_id");
             if(!usr_email.isEmpty()){
                 Log.d(TAG, "ViewAllStreamsActivity>>onCreate() Got usr_email: " + usr_email);
             }
         }
 
-        /* Get all streams */
+        updateStreamsAsync(false,usr_id,0);
+
+        subscribed_btn = (Button) findViewById(R.id.subscribed_stream_btn);
+
+        /* Enable view subscribed streams button if the user has logged in */
+        if(!usr_email.isEmpty()){
+            subscribed_btn.setVisibility(View.VISIBLE);
+            subscribed_btn.setOnClickListener(this);
+        }else{
+            subscribed_btn.setVisibility(View.GONE);
+        }
+
+
+    }
+
+
+    private void updateStreamsAsync(boolean is_view_subscribed, String usr_id, int start_idx){
         AsyncHttpClient httpClient = new AsyncHttpClient();
-        httpClient.get(request_ws_url, new AsyncHttpResponseHandler() {
+        RequestParams params = new RequestParams();
+        params.put("view_all_start_idx", start_idx);
+        if (!is_view_subscribed){
+            /* get all streams */
+            Log.d(TAG, "Switching to view all streams");
+        }else{
+            /* get subscribed streams */
+            params.put("is_view_all_subscribed", true);
+            params.put("user_email", usr_email);
+            params.put("view_all_start_idx", is_view_subscribed);
+
+            Log.d(TAG, "Switching to view subscribed streams");
+        }
+        httpClient.addHeader("Accept", "application/json");
+        Log.d(TAG, "Sending out the request with param" + params.toString());
+        httpClient.get(request_ws_url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-//                final ArrayList<String> imageURLs = new ArrayList<String>();
-//                final ArrayList<String> imageCaps = new ArrayList<String>();
+                final ArrayList<String> stream_id_lst = new ArrayList<String>();
+                final ArrayList<String> stream_name_lst = new ArrayList<String>();
+                final ArrayList<String> cover_img_url_list = new ArrayList<String>();
                 try {
-//                    JSONObject jObject = new JSONObject(new String(response));
-//                    JSONArray displayImages = jObject.getJSONArray("displayImages");
-//                    JSONArray displayCaption = jObject.getJSONArray("imageCaptionList");
-//
-//                    for(int i=0;i<displayImages.length();i++) {
-//
-//                        imageURLs.add(displayImages.getString(i));
-//                        imageCaps.add(displayCaption.getString(i));
-//                        System.out.println(displayImages.getString(i));
-//                    }
-//                    GridView gridview = (GridView) findViewById(R.id.gridview);
-//                    gridview.setAdapter(new ImageAdapter(context,imageURLs));
-//                    gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View v,
-//                                                int position, long id) {
-//
-//                            Toast.makeText(context, imageCaps.get(position), Toast.LENGTH_SHORT).show();
-//
+                    JSONObject jObject = new JSONObject(new String(response));
+                    JSONArray jStreamIdLst = jObject.getJSONArray("stream_id_lst");
+                    JSONArray jStreamNameLst = jObject.getJSONArray("stream_name_lst");
+                    JSONArray jCoverLst = jObject.getJSONArray("cover_img_url_list");
+                    last_stream_idx = jObject.getInt("last_idx");
+
+                    for (int i = 0; i < jStreamIdLst.length(); i++) {
+                        stream_id_lst.add(jStreamIdLst.getString(i));
+                        stream_name_lst.add(jStreamNameLst.getString(i));
+                        cover_img_url_list.add(jCoverLst.getString(i));
+                    }
+
+                    GridView gridview = (GridView) findViewById(R.id.gridview);
+                    gridview.setAdapter(new ImageAdapter(context, cover_img_url_list));
+                    gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View v,
+                                                int position, long id) {
+                            Toast.makeText(context, stream_id_lst.get(position), Toast.LENGTH_SHORT).show();
+
 //                            Dialog imageDialog = new Dialog(context);
 //                            imageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 //                            imageDialog.setContentView(R.layout.thumbnail);
@@ -72,10 +127,9 @@ public class ViewAllStreamsActivity extends AppCompatActivity {
 //                            Picasso.with(context).load(imageURLs.get(position)).into(image);
 //
 //                            imageDialog.show();
-//                        }
-//                    });
-                }
-                catch(JSONException j){
+                        }
+                    });
+                } catch (JSONException j) {
                     System.out.println("JSON Error");
                 }
 
@@ -87,8 +141,33 @@ public class ViewAllStreamsActivity extends AppCompatActivity {
             }
 
 
-        /* Enable view subscribed streams button if the user has logged in */
+        });
 
+        //TODO: add a 'more' button if there is more streams
 
     }
+
+    private void onSubscribedBtnClicked() {
+        if (!is_view_subscribed) {
+            /* Changing to view all*/
+            subscribed_btn.setText(R.string.view_all_btn);
+            is_view_subscribed = true;
+        }
+        else{
+            subscribed_btn.setText(R.string.subscribed_stream_btn);
+            is_view_subscribed = false;
+        }
+        updateStreamsAsync(is_view_subscribed, usr_id, 0);
+    }
+
+    // [START on_click]
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.subscribed_stream_btn:
+                onSubscribedBtnClicked();
+                break;
+        }
+    }
+    // [END on_click]
 }

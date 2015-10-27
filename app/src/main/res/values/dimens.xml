@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="logo_top_margin">100dp</dimen>
+
+
 </resources>

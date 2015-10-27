@@ -57,6 +57,7 @@ public class SigninActivity extends AppCompatActivity implements
 
     /* Connexus variables */
     private static String usr_mail = "";
+    private static String usr_id = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +113,9 @@ public class SigninActivity extends AppCompatActivity implements
                 // Show signed-in user's name
                 String name = currentPerson.getDisplayName();
                 mStatus.setText(getString(R.string.signed_in_fmt, name));
+
+                usr_id = currentPerson.getId();
+
 
                 // Show users' email address (which requires GET_ACCOUNTS permission)
                 if (checkAccountsPermission()) {
@@ -378,6 +382,7 @@ public class SigninActivity extends AppCompatActivity implements
         Intent intent= new Intent(this, ViewAllStreamsActivity.class);
         /* Pass the user email to the new intent  */
         intent.putExtra("usr_email", usr_mail);
+        intent.putExtra("usr_id", usr_id);
         startActivity(intent);
     }
 

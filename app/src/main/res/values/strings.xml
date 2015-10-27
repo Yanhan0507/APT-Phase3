@@ -26,12 +26,16 @@
     <!-- Rationale for asking for Contacts -->
     <string name="contacts_permission_rationale">Contacts access is needed in order to retrieve your email address.</string>
 
-
+    <string name="search_reminder">stream name</string>
 
     <!--Button Texts-->
     <string name="view_all_btn">View All Streams</string>
 
     <string name="ws_base_url">http://ee382v-apt-connexus.appspot.com/</string>
+
+    <string name="search_btn">Search</string>
+
+    <string name="subscribed_stream_btn">My Subscribed Streams</string>
 
 
 </resources>
