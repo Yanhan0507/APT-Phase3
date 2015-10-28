@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.utexas.ece.ee382v.connexus.connexus" >
+    package="edu.utexas.ece.ee382v.connexus.connexus">
 
     <!-- Permissions -->
     <!-- To access Google APIs -->
@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- OAuth2.0 -->
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -23,11 +22,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name="edu.utexas.ece.ee382v.connexus.SigninActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,10 +34,10 @@
             </intent-filter>
         </activity>
         <activity android:name="edu.utexas.ece.ee382v.connexus.ViewAllStreamsActivity" />
-        <activity android:name="edu.utexas.ece.ee382v.connexus.CameraActivity"
-            android:screenOrientation="portrait" >
-
-        </activity>
+        <activity
+            android:name="edu.utexas.ece.ee382v.connexus.CameraActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="edu.utexas.ece.ee382v.connexus.ViewSingleStreamActivity"></activity>
     </application>
 
 </manifest>

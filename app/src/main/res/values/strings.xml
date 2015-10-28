@@ -37,5 +37,10 @@
 
     <string name="subscribed_stream_btn">My Subscribed Streams</string>
 
+    <string name="upload_img_btn">Upload an Image</string>
+
+    <string name="back_streams">Back to Streams</string>
+
+    <string name="more_img_btn">More Pictures</string>
 
 </resources>

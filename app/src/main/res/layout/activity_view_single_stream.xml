@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_grey_700"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="edu.utexas.ece.ee382v.connexus.ViewSingleStreamActivity">
+
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/grid_single_stream_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="90dp"
+        android:numColumns="4"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/more_img_btn"
+        android:text="@string/more_img_btn"
+        android:layout_width="192dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/grid_single_stream_view"
+        android:layout_centerInParent="true"
+        />
+
+    <Button
+        android:id="@+id/upload_img_btn"
+        android:text="@string/upload_img_btn"
+        android:layout_width="192dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/more_img_btn"
+        android:layout_centerInParent="true"
+        />
+
+    <Button
+        android:id="@+id/back_streams_btn"
+        android:text="@string/back_streams"
+        android:layout_width="192dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/upload_img_btn"
+        android:layout_centerInParent="true"
+        />
+
+
+</RelativeLayout>

@@ -1,6 +1,7 @@
 package edu.utexas.ece.ee382v.connexus;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -8,7 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -35,7 +35,7 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
     final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/view_all";
 
     private static String usr_email = "";
-    private static String usr_id = "";
+//    private static String usr_id = "";
     Context context = this;
 
     private int last_stream_idx = -1;
@@ -53,13 +53,12 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             usr_email = extras.getString("usr_email");
-            usr_id = extras.getString("usr_id");
             if(!usr_email.isEmpty()){
                 Log.d(TAG, "ViewAllStreamsActivity>>onCreate() Got usr_email: " + usr_email);
             }
         }
 
-        updateStreamsAsync(false,usr_id,0);
+        updateStreamsAsync(false,usr_email,0);
 
         subscribed_btn = (Button) findViewById(R.id.subscribed_stream_btn);
 
@@ -117,16 +116,9 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
                         @Override
                         public void onItemClick(AdapterView<?> parent, View v,
                                                 int position, long id) {
-                            Toast.makeText(context, stream_id_lst.get(position), Toast.LENGTH_SHORT).show();
 
-//                            Dialog imageDialog = new Dialog(context);
-//                            imageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                            imageDialog.setContentView(R.layout.thumbnail);
-//                            ImageView image = (ImageView) imageDialog.findViewById(R.id.thumbnail_IMAGEVIEW);
-//
-//                            Picasso.with(context).load(imageURLs.get(position)).into(image);
-//
-//                            imageDialog.show();
+                            start_viewStreamActivity(stream_id_lst.get(position));
+
                         }
                     });
                 } catch (JSONException j) {
@@ -147,6 +139,16 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
 
     }
 
+    /* Start a new View stream activity */
+    private void start_viewStreamActivity(String stream_id){
+        /* Create a new activity */
+        Intent intent= new Intent(this, ViewSingleStreamActivity.class);
+                            /* Pass the stream_id and user email to the new intent  */
+        intent.putExtra("usr_email", usr_email);
+        intent.putExtra("stream_id", stream_id);
+        startActivity(intent);
+    }
+
     private void onSubscribedBtnClicked() {
         if (!is_view_subscribed) {
             /* Changing to view all*/
@@ -157,7 +159,7 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
             subscribed_btn.setText(R.string.subscribed_stream_btn);
             is_view_subscribed = false;
         }
-        updateStreamsAsync(is_view_subscribed, usr_id, 0);
+        updateStreamsAsync(is_view_subscribed, usr_email, 0);
     }
 
     // [START on_click]

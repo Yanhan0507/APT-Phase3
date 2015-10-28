@@ -71,7 +71,7 @@ public class SigninActivity extends AppCompatActivity implements
         }
         // [END restore_saved_instance_state]
 
-        /* Add Sign in button */
+        /* Add listeners for buttons */
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
@@ -386,8 +386,4 @@ public class SigninActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    public void capture_camera(View view){
-        Intent intent = new Intent(this, CameraActivity.class);
-        startActivity(intent);
-    }
 }
