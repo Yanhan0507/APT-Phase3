@@ -31,7 +31,7 @@ public class NearbyActivity extends AppCompatActivity implements LocationListene
 
     private static final String TAG = "NearbyActivity";
 
-    final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/m_view_nearby_photos/";
+    final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/m_view_nearby_photos";
 
     LocationManager mLocationManager;
 
@@ -116,7 +116,9 @@ public class NearbyActivity extends AppCompatActivity implements LocationListene
                         stream_id_lst.add(j_stream_id_lst.getString(i));
                     }
 
-                    GridView gridview = (GridView) findViewById(R.id.grid_single_stream_view);
+                    Log.d(TAG, "updateNearbyImagesAsync:: get " + stream_id_lst.size() + " streams list");
+
+                    GridView gridview = (GridView) findViewById(R.id.grid_nearby_view);
                     gridview.setAdapter(new SquareImageAdapter(context, img_url_lst, distance_lst));
                     gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
