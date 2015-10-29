@@ -13,6 +13,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- Location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -36,8 +40,9 @@
         <activity android:name="edu.utexas.ece.ee382v.connexus.ViewAllStreamsActivity" />
         <activity
             android:name="edu.utexas.ece.ee382v.connexus.CameraActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name="edu.utexas.ece.ee382v.connexus.ViewSingleStreamActivity"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name="edu.utexas.ece.ee382v.connexus.ViewSingleStreamActivity" />
+        <activity android:name="edu.utexas.ece.ee382v.connexus.NearbyActivity"></activity>
     </application>
 
 </manifest>

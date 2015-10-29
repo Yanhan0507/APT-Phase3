@@ -20,7 +20,8 @@
         android:horizontalSpacing="10dp"
         android:stretchMode="columnWidth"
         android:gravity="center"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:nestedScrollingEnabled="false" />
 
     <Button
         android:id="@+id/more_img_btn"

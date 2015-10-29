@@ -41,7 +41,7 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
     private int last_stream_idx = -1;
     private boolean is_view_subscribed = false;
 
-    Button subscribed_btn;
+    Button subscribed_btn, nearby_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +62,14 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
 
         subscribed_btn = (Button) findViewById(R.id.subscribed_stream_btn);
 
+        nearby_btn = (Button) findViewById(R.id.nearby_btn);
+
         /* Enable view subscribed streams button if the user has logged in */
         if(!usr_email.isEmpty()){
             subscribed_btn.setVisibility(View.VISIBLE);
             subscribed_btn.setOnClickListener(this);
+            nearby_btn.setOnClickListener(this);
+
         }else{
             subscribed_btn.setVisibility(View.GONE);
         }
@@ -162,12 +166,19 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
         updateStreamsAsync(is_view_subscribed, usr_email, 0);
     }
 
+
     // [START on_click]
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.subscribed_stream_btn:
                 onSubscribedBtnClicked();
+                break;
+            case R.id.nearby_btn:
+                Intent intent= new Intent(this, NearbyActivity.class);
+                /* Pass the stream_id and user email to the new intent  */
+                intent.putExtra("usr_email", usr_email);
+                startActivity(intent);
                 break;
         }
     }

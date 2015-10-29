@@ -31,16 +31,16 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
     private static final String TAG = "ViewSingleStreamAct";
 
     /* data members */
-    private static String usr_email = "";
-    private static String stream_id = "";
-    private static String stream_name = "";
-    private static String upload_url = "";
+    static String usr_email = "";
+    static String stream_id = "";
+    static String stream_name = "";
+    static String upload_url = "";
 
     private static String stream_owner = "";
     final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/m_view_single_stream";
 
-    private int last_idx=0;
-    private int nrof_imgs_in_stream=0;
+    static int last_idx=0;
+    static int nrof_imgs_in_stream=0;
 
     Context context = this;
 
@@ -128,6 +128,15 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
                 } catch (JSONException j) {
                     System.out.println("JSON Error");
                 }
+
+                Log.d(TAG, "last_idx="+last_idx+", nrof_imgs_in_stream="+nrof_imgs_in_stream);
+                //TODO: add a 'more' button if there is more streams
+                if (last_idx < nrof_imgs_in_stream){
+                    findViewById(R.id.more_img_btn).setEnabled(true);
+                    findViewById(R.id.more_img_btn).setVisibility(View.VISIBLE);
+                }else{
+                    findViewById(R.id.more_img_btn).setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -137,8 +146,6 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
 
 
         });
-
-        //TODO: add a 'more' button if there is more streams
 
     }
 

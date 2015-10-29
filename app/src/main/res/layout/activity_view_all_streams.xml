@@ -42,6 +42,15 @@
         />
 
     <Button
+        android:id="@+id/nearby_btn"
+        android:text="@string/nearby_btn"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_btn"
+        android:layout_alignParentRight="true"
+        />
+
+    <Button
         android:id="@+id/subscribed_stream_btn"
         android:text="@string/subscribed_stream_btn"
         android:layout_width="wrap_content"
