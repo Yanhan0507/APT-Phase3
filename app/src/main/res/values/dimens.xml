@@ -5,5 +5,7 @@
 
     <dimen name="logo_top_margin">100dp</dimen>
 
+    <dimen name="search_res_font_size">20sp</dimen>
+
 
 </resources>

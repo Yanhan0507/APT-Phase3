@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -35,13 +36,12 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
     final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/view_all";
 
     private static String usr_email = "";
-//    private static String usr_id = "";
     Context context = this;
 
     private int last_stream_idx = -1;
     private boolean is_view_subscribed = false;
 
-    Button subscribed_btn, nearby_btn;
+    Button subscribed_btn, nearby_btn, search_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +64,14 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
 
         nearby_btn = (Button) findViewById(R.id.nearby_btn);
 
+        search_btn = (Button)findViewById(R.id.search_btn);
+
         /* Enable view subscribed streams button if the user has logged in */
         if(!usr_email.isEmpty()){
             subscribed_btn.setVisibility(View.VISIBLE);
             subscribed_btn.setOnClickListener(this);
             nearby_btn.setOnClickListener(this);
+            search_btn.setOnClickListener(this);
 
         }else{
             subscribed_btn.setVisibility(View.GONE);
@@ -180,6 +183,18 @@ public class ViewAllStreamsActivity extends AppCompatActivity implements View.On
                 intent.putExtra("usr_email", usr_email);
                 startActivity(intent);
                 break;
+            case R.id.search_btn:
+                Intent s_intent= new Intent(this, SearchResultActivity.class);
+                /* get the keyword */
+                EditText edt = (EditText)findViewById(R.id.search_text);
+                String keyword = edt.getText().toString();
+                /* Pass the stream_id and user email to the new intent  */
+                s_intent.putExtra("search_keyword", keyword);
+                s_intent.putExtra("search_type", "title");
+                s_intent.putExtra("user_email", usr_email);
+                startActivity(s_intent);
+                break;
+
         }
     }
     // [END on_click]
