@@ -150,8 +150,15 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
     }
 
     public void open_upload_image(View view){
-        Intent intent = new Intent(this, CameraActivity.class);
+        Intent intent = new Intent(this, ImageUpload.class);
         //TODO: add upload_url and stream id to this
+
+
+
+        intent.putExtra("stream_name", stream_name);
+        intent.putExtra("stream_id",stream_id );
+        intent.putExtra("usr_email",usr_email);
+
         startActivity(intent);
 
     }

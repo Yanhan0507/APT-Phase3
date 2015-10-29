@@ -10,11 +10,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 //import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.ConnectionResult;
@@ -42,13 +46,27 @@ import org.w3c.dom.Text;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 
 import edu.utexas.ece.ee382v.connexus.connexus.R;
 
 
-public class ImageUpload extends ActionBarActivity implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+public class ImageUpload extends AppCompatActivity implements LocationListener {
+
+    private static final String TAG = "NearbyActivity";
+
+    final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/m_view_nearby_photos";
+
+    LocationManager mLocationManager;
+
+    Location location;
+
+
+
+    static String streamName = "";
+    static String streamID = "";
+    static String email = "";
+
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static final int PICK_IMAGE = 1;
@@ -71,19 +89,42 @@ public class ImageUpload extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_upload);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                 mGoogleApiClient);
-        if (mLastLocation != null) {
-            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        streamName = getIntent().getStringExtra("stream_name");
+        streamID = getIntent().getStringExtra("stream_id");
+        email = getIntent().getStringExtra("usr_email");
+
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(Drive.API)
+//                .addScope(Drive.SCOPE_FILE)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .addApi(LocationServices.API)
+//                .build();
+//        mGoogleApiClient.connect();
+        location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+            // Do something with the recent location fix
+            //  otherwise wait for the update below
+            onLocationChanged(location);
         }
+        else {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        }
+
+
+//        if (servicesConnected()){
+//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                    mGoogleApiClient);
+//            System.out.println("we have just initialized mLast: " + mLastLocation);
+//        }
+//
+//        if (mLastLocation != null) {
+//            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+//        }
 
 
         // Choose image from library
@@ -186,9 +227,9 @@ public class ImageUpload extends ActionBarActivity implements
                             byte[] b = baos.toByteArray();
                             byte[] encodedImage = Base64.encode(b, Base64.DEFAULT);
                             String encodedImageStr = encodedImage.toString();
-                            String location=mLastLocation.getLatitude()+"_"+mLastLocation.getLongitude();
+                            String location_str = location.getLatitude() + "_" + location.getLongitude();
 
-                            getUploadURL(b, photoCaption,location);
+                            getUploadURL(b, photoCaption,location_str);
                         }
                     }
             );
@@ -221,9 +262,10 @@ public class ImageUpload extends ActionBarActivity implements
                             byte[] b = baos.toByteArray();
                             byte[] encodedImage = Base64.encode(b, Base64.DEFAULT);
                             String encodedImageStr = encodedImage.toString();
-                            String location=mLastLocation.getLatitude()+"_"+mLastLocation.getLongitude();
+//                            String location=mLastLocation.getLatitude()+"_"+mLastLocation.getLongitude();
+                            String location_str = location.getLatitude() + "_" + location.getLongitude();
 
-                            getUploadURL(b, photoCaption,location);
+                            getUploadURL(b, photoCaption,location_str);
                         }
                     }
             );
@@ -234,20 +276,23 @@ public class ImageUpload extends ActionBarActivity implements
 
     private void getUploadURL(final byte[] encodedImage, final String photoCaption,final String location){
         AsyncHttpClient httpClient = new AsyncHttpClient();
-//        String request_url="http://aptandroiddemo.appspot.com/getUploadURL";
-        String request_url="http://ee382v-apt-connexus.appspot.com/ws/stream/upload_image";
+
+//        String request_url="http://ee382v-apt-connexus.appspot.com/ws/stream/upload_image";
+        String request_url="http://ee382v-apt-connexus.appspot.com/ws/stream/getUploadURL";
         System.out.println(request_url);
+        System.out.println("1111111111111111");
         httpClient.get(request_url, new AsyncHttpResponseHandler() {
             String upload_url;
-
-            @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
 
                 try {
+                    System.out.println("22222222222222222");
                     JSONObject jObject = new JSONObject(new String(response));
-
+                    System.out.println("333333333333333333");
                     upload_url = jObject.getString("upload_url");
+                    System.out.println("4444444444444444444");
                     postToServer(encodedImage, photoCaption, upload_url, location);
+                    System.out.println("5555555555555555555");
 
                 } catch (JSONException j) {
                     System.out.println("JSON Error");
@@ -267,6 +312,12 @@ public class ImageUpload extends ActionBarActivity implements
         params.put("file",new ByteArrayInputStream(encodedImage));
         params.put("stream_description", description);
         params.put("location", location);
+
+        params.put("stream_name", streamName);
+        params.put("stream_id", streamID);
+        params.put("usr_email", email);
+
+
         // stream_id
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(upload_url, params, new AsyncHttpResponseHandler() {
@@ -275,11 +326,13 @@ public class ImageUpload extends ActionBarActivity implements
                 Log.w("async", "success!!!!");
                 Toast.makeText(context, "Upload Successful", Toast.LENGTH_SHORT).show();
 
-                Intent intent= new Intent(ImageUpload.this, ViewAllStreamsActivity.class);
-                String streamName = getIntent().getStringExtra("streamName");
-                String streamID = getIntent().getStringExtra("streamID");
-                intent.putExtra("streamName", streamName);
-                intent.putExtra("streamID", streamID);
+                Intent intent = new Intent(ImageUpload.this, ViewAllStreamsActivity.class);
+
+
+                intent.putExtra("stream_name", streamName);
+                intent.putExtra("stream_id", streamID);
+                intent.putExtra("usr_email", email);
+
                 startActivity(intent);
             }
 
@@ -289,87 +342,23 @@ public class ImageUpload extends ActionBarActivity implements
             }
         });
     }
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            Log.d("Location Changed", location.getLatitude() + " and " + location.getLongitude());
+            mLocationManager.removeUpdates(this);
+
+            String loc_str = location.getLatitude() + "_" + location.getLongitude();
+            /* Get the location. Now update the nearby images */
 
 
-
-
-    @Override
-    public void onConnected(Bundle dataBundle) {
-        // Display the connection status
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-        //String location=mLocationClient.getLastLocation().getLatitude()+"_"+mLocationClient.getLastLocation().getLongitude();
-        //System.out.println(location);
-
-        String streamName = getIntent().getStringExtra("streamName");
-        String streamID = getIntent().getStringExtra("streamID");
-        TextView responseText = (TextView) this.findViewById(R.id.stream_name_upload);
-        responseText.setText(streamName);
-
-        Button chooseFromLibraryButton = (Button) findViewById(R.id.choose_from_library);
-        chooseFromLibraryButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-                    }
-                }
-        );
-
-    }
-    /*
-    * Called by Location Services if the connection to the
-    * location client drops because of an error.
-    */
-
-    public void onDisconnected() {
-        // Display the connection status
-        Toast.makeText(this, "Disconnected. Please re-connect.",
-                Toast.LENGTH_SHORT).show();
-    }
-    /*
-     * Called by Location Services if the attempt to
-     * Location Services fails.
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        /*
-         * Google Play services can resolve some errors it detects.
-         * If the error has a resolution, try sending an Intent to
-         * start a Google Play services activity that can resolve
-         * error.
-         */
-        if (connectionResult.hasResolution()) {
-            try {
-                // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(
-                        this,
-                        CONNECTION_FAILURE_RESOLUTION_REQUEST);
-                /*
-                 * Thrown if Google Play services canceled the original
-                 * PendingIntent
-                 */
-            } catch (IntentSender.SendIntentException e) {
-                // Log the error
-                e.printStackTrace();
-            }
-        } else {
-            /*
-             * If no resolution is available, display a dialog to the
-             * user with the error.
-             */
-            System.out.println(connectionResult.getErrorCode());
-            //showErrorDialog(connectionResult.getErrorCode());
         }
     }
 
+    // Required functions
+    public void onProviderDisabled(String arg0) {}
+    public void onProviderEnabled(String arg0) {}
+    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
 
-
-    public void onConnectionSuspended(int code){
-        Log.w("service suspended", "wrong");
-    }
 
     public void viewAllImages(View view){
         Intent intent= new Intent(this, ViewAllStreamsActivity.class);
