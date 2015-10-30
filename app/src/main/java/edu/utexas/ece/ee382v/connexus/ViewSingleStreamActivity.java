@@ -143,11 +143,13 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
 
                 Log.d(TAG, "last_idx="+last_idx+", nrof_imgs_in_stream="+nrof_imgs_in_stream);
                 //TODO: add a 'more' button if there is more streams
-                if (last_idx < nrof_imgs_in_stream){
+                if (last_idx < nrof_imgs_in_stream-1){
                     findViewById(R.id.more_img_btn).setEnabled(true);
                     findViewById(R.id.more_img_btn).setVisibility(View.VISIBLE);
+                    System.out.println("updateImagesAsync:: last_idx = " + last_idx + ", nrof_imgs_in_stream = " + nrof_imgs_in_stream + ", set more button to visible.");
                 }else{
                     findViewById(R.id.more_img_btn).setVisibility(View.GONE);
+                    System.out.println("updateImagesAsync:: last_idx = " + last_idx + ", nrof_imgs_in_stream = " + nrof_imgs_in_stream +", set more button to invisible.");
                 }
                 if (last_idx - 16 >0 ){
                     prev_btn.setEnabled(true);
