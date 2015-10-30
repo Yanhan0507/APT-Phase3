@@ -21,18 +21,21 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="32sp"
+            android:textColor="@color/red"
             />
         <Button
             android:id="@+id/choose_from_library"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/choose_from_library"
+            android:textAllCaps="false"
             />
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/use_camera"
             android:onClick="createCameraPreview"
+            android:textAllCaps="false"
             />
 
         <ImageView
@@ -51,6 +54,7 @@
             android:text="@string/title_activity_upload"
             android:clickable="false"
             android:id="@+id/upload_to_server"
+            android:textAllCaps="false"
             />
 
         <TextView

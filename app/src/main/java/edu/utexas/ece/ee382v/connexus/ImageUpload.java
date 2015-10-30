@@ -216,7 +216,7 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
                         @Override
                         public void onClick(View v) {
 
-                            // Get photo caption
+                            // Get rphoto caption
 
                             EditText text = (EditText) findViewById(R.id.upload_message);
                             String photoCaption = text.getText().toString();
