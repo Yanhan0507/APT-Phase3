@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -42,12 +43,20 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
     static int last_idx=0;
     static int nrof_imgs_in_stream=0;
 
+    static Button prev_btn;
+    static Button more_btn;
+
+    static int nrof_imgs_on_view;
+
     Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_single_stream);
+
+        prev_btn = (Button)findViewById(R.id.prev_img_btn);
+        more_btn = (Button)findViewById(R.id.more_img_btn);
 
         /* Get the usr_email and stream_id from the bundle */
         Bundle extras = getIntent().getExtras();
@@ -68,13 +77,14 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
         findViewById(R.id.upload_img_btn).setOnClickListener(this);
         findViewById(R.id.back_streams_btn).setOnClickListener(this);
         findViewById(R.id.more_img_btn).setOnClickListener(this);
+        findViewById(R.id.prev_img_btn).setOnClickListener(this);
     }
 
-    private void updateImagesAsync(String a_stream_id, int start_idx){
+    private void updateImagesAsync(String a_stream_id, int a_start_idx){
         AsyncHttpClient httpClient = new AsyncHttpClient();
         RequestParams params = new RequestParams();
         params.put("stream_id", a_stream_id);
-        params.put("view_stream_start_idx", start_idx);
+        params.put("view_stream_start_idx", a_start_idx);
 
         httpClient.addHeader("Accept", "application/json");
         Log.d(TAG, "Sending out the request with param" + params.toString());
@@ -95,8 +105,10 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
                     stream_name = jObject.getString("stream_name");
                     JSONArray j_img_id_lst = jObject.getJSONArray("img_id_lst");
                     JSONArray j_img_url_lst = jObject.getJSONArray("img_url_lst");
+                    nrof_imgs_on_view = j_img_url_lst.length();
                     upload_url = jObject.getString("upload_url");
                     last_idx = jObject.getInt("last_idx");
+                    System.out.println("updateImagesAsync:: got last_idx = " + last_idx + " from the response.");
                     nrof_imgs_in_stream = jObject.getInt("nrof_imgs_in_stream");
 
                     for (int i = 0; i < j_img_id_lst.length(); i++) {
@@ -137,6 +149,15 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
                 }else{
                     findViewById(R.id.more_img_btn).setVisibility(View.GONE);
                 }
+                if (last_idx - 16 >0 ){
+                    prev_btn.setEnabled(true);
+                    prev_btn.setVisibility(View.VISIBLE);
+                    System.out.println("updateImagesAsync:: last_idx = " + last_idx + ", rendering previous button.");
+                }else{
+                    prev_btn.setVisibility(View.GONE);
+                    System.out.println("updateImagesAsync:: last_idx = " + last_idx + ", set previous button to invisible.");
+                }
+
             }
 
             @Override
@@ -152,8 +173,6 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
     public void open_upload_image(View view){
         Intent intent = new Intent(this, ImageUpload.class);
         //TODO: add upload_url and stream id to this
-
-
 
         intent.putExtra("stream_name", stream_name);
         intent.putExtra("stream_id",stream_id );
@@ -173,6 +192,13 @@ public class ViewSingleStreamActivity extends AppCompatActivity implements View.
                 super.onBackPressed();
                 break;
             case R.id.more_img_btn:
+                updateImagesAsync(stream_id, last_idx);
+                break;
+            case R.id.prev_img_btn:
+                int start_idx = last_idx - nrof_imgs_on_view - 16;
+                if(start_idx<0)
+                    start_idx=0;
+                updateImagesAsync(stream_id, start_idx);
                 break;
         }
     }

@@ -3,6 +3,7 @@
     android:id="@+id/response_scroll"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/blue_grey_700"
     android:scrollbars="vertical"
     >
     <LinearLayout
@@ -16,12 +17,11 @@
         tools:context="com.connexus.yzhao.connexus.upload">
 
         <TextView
-            android:text="@string/app_name"
+            android:text="@string/upload_img_txt"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="32sp"
-            android:textColor="@color/red"
             />
         <Button
             android:id="@+id/choose_from_library"

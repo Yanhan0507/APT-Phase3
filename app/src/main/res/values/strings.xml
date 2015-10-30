@@ -27,7 +27,7 @@
 
     <string name="use_camera">Use Camera</string>
 
-    <string name="upload_hint">Add descriptions</string>
+    <string name="upload_hint">description</string>
 
     <string name="title_activity_upload">upload</string>
 
@@ -49,8 +49,11 @@
 
     <string name="back_streams">Back to Streams</string>
 
-    <string name="more_img_btn">More Pictures</string>
+    <string name="more_img_btn">More Images</string>
+    <string name="prev_img_btn">Previous Images</string>
 
     <string name="nearby_btn">Nearby</string>
+
+    <string name="upload_img_txt">Upload an image</string>
 
 </resources>

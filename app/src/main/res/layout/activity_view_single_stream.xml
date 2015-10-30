@@ -29,7 +29,15 @@
         android:layout_width="192dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/grid_single_stream_view"
-        android:layout_centerInParent="true"
+
+        />
+    <Button
+        android:id="@+id/prev_img_btn"
+        android:text="@string/prev_img_btn"
+        android:layout_width="192dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/grid_single_stream_view"
+        android:layout_toRightOf="@+id/more_img_btn"
         />
 
     <Button

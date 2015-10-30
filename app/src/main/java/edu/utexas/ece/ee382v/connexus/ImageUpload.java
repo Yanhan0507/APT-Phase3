@@ -4,7 +4,6 @@ package edu.utexas.ece.ee382v.connexus;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -13,28 +12,18 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-//import android.support.v7.app.AppCompatActivity;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -42,7 +31,6 @@ import com.loopj.android.http.RequestParams;
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,18 +38,18 @@ import java.util.Calendar;
 
 import edu.utexas.ece.ee382v.connexus.connexus.R;
 
+//import android.support.v7.app.AppCompatActivity;
+
 
 public class ImageUpload extends AppCompatActivity implements LocationListener {
 
     private static final String TAG = "NearbyActivity";
 
-    final String request_ws_url = "http://ee382v-apt-connexus.appspot.com/ws/stream/m_view_nearby_photos";
+    final String request_addr_get_upload_url ="http://ee382v-apt-connexus.appspot.com/ws/stream/m_get_upload_url";
 
     LocationManager mLocationManager;
 
     Location location;
-
-
 
     static String streamName = "";
     static String streamID = "";
@@ -71,18 +59,6 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static final int PICK_IMAGE = 1;
     Context context = this;
-
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private TextView mLatitudeText;
-    private TextView mLongitudeText;
-
-
-
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,14 +72,6 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addApi(Drive.API)
-//                .addScope(Drive.SCOPE_FILE)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(LocationServices.API)
-//                .build();
-//        mGoogleApiClient.connect();
         location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
             // Do something with the recent location fix
@@ -113,19 +81,6 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
         else {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         }
-
-
-//        if (servicesConnected()){
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                    mGoogleApiClient);
-//            System.out.println("we have just initialized mLast: " + mLastLocation);
-//        }
-//
-//        if (mLastLocation != null) {
-//            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-//        }
-
 
         // Choose image from library
         Button chooseFromLibraryButton = (Button) findViewById(R.id.choose_from_library);
@@ -276,24 +231,16 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
 
     private void getUploadURL(final byte[] encodedImage, final String photoCaption,final String location){
         AsyncHttpClient httpClient = new AsyncHttpClient();
+        httpClient.addHeader("Accept", "application/json");
+        Log.d(TAG, "Sending out the request for upload_url");
+        httpClient.get(request_addr_get_upload_url, new AsyncHttpResponseHandler() {
 
-//        String request_url="http://ee382v-apt-connexus.appspot.com/ws/stream/upload_image";
-        String request_url="http://ee382v-apt-connexus.appspot.com/ws/stream/getUploadURL";
-        System.out.println(request_url);
-        System.out.println("1111111111111111");
-        httpClient.get(request_url, new AsyncHttpResponseHandler() {
-            String upload_url;
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-
+                String upload_url;
                 try {
-                    System.out.println("22222222222222222");
                     JSONObject jObject = new JSONObject(new String(response));
-                    System.out.println("333333333333333333");
                     upload_url = jObject.getString("upload_url");
-                    System.out.println("4444444444444444444");
                     postToServer(encodedImage, photoCaption, upload_url, location);
-                    System.out.println("5555555555555555555");
-
                 } catch (JSONException j) {
                     System.out.println("JSON Error");
                 }
@@ -306,8 +253,8 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
         });
     }
 
-    private void postToServer(byte[] encodedImage,String description, String upload_url, String location){
-        System.out.println(upload_url);
+    private void postToServer(byte[] encodedImage,String description, String the_upload_url, String location){
+        System.out.println(the_upload_url);
         RequestParams params = new RequestParams();
         params.put("file",new ByteArrayInputStream(encodedImage));
         params.put("stream_description", description);
@@ -320,14 +267,14 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
 
         // stream_id
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post(upload_url, params, new AsyncHttpResponseHandler() {
+        client.addHeader("Accept", "application/json");
+        client.post(the_upload_url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                Log.w("async", "success!!!!");
+                Log.d("async", "success!!!!");
                 Toast.makeText(context, "Upload Successful", Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(ImageUpload.this, ViewAllStreamsActivity.class);
-
+                Intent intent = new Intent(ImageUpload.this, ViewSingleStreamActivity.class);
 
                 intent.putExtra("stream_name", streamName);
                 intent.putExtra("stream_id", streamID);
@@ -344,6 +291,7 @@ public class ImageUpload extends AppCompatActivity implements LocationListener {
     }
     public void onLocationChanged(Location location) {
         if (location != null) {
+            this.location = location;
             Log.d("Location Changed", location.getLatitude() + " and " + location.getLongitude());
             mLocationManager.removeUpdates(this);
 
